@@ -1,38 +1,29 @@
 body {
     padding: 0;
+    display: flex;
     text-align: center;
+    flex-direction: column;
   }
-  
-.game-intro {
-    padding: 0% 10%;
-  }
-  
-.game-intro p {
-    font-size: 18px;
-    font-family: "Verdana"
+
+.tanya-mcquoid {
+    flex-direction: column;
   }
   
 .arrows-img {
-    width: 250px;
+    width: 200px;
   }
   
 body button {
-    font-size: 20px;
+    font-size: 30px;
     background-color: #ccd5d2;
     color: #fff;
-    padding: 10px 20px;
+    padding: 10px;
     border: 0;
-    box-shadow: 0;
     border-radius: 8px;
-    margin-bottom: 20px;
   }
   
-#game-board {
-      display: none;
+.game-board {
+      display: flex;
       padding: 20px 0px;
-      background-color: black;
+      flex-direction: column;
   }
-
-canvas {
-    border: 1px solid black;
-}

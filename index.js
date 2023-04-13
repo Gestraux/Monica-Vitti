@@ -10,49 +10,56 @@ window.addEventListener('load', () => {
 
   const obstacleImage = new Image()
   obstacleImage.src = './images/rock.png'
+
+  const gameDiv = document.querySelector('.game-board')
+  gameDiv.style.display = 'none'
+
+  const intro = document.querySelector('.game-intro')
+
+  const endGame = document.querySelector('.game-over')
+  endGame.style.display = 'none'
   
-  const playerWidth = 0;
-  const playerHeight = 0;
+  const playerWidth = 215
+  const playerHeight = 200
+  let playerX = 0
+  let playerY = 525
+  
+  const obstacleWidth = 40
+  const obstacleHeight = 30
+  let obstacleX = 1055
+  let obstacleY = 675
+  
+  const minX = 0
+  const maxX = canvas.width - playerWidth
+  const minY = 375
+  const maxY = 625
 
   let isMovingUp = false;
   let isMovingLeft = false;
   let isMovingDown = false;
   let isMovingRight = false;
-  let playerY = 0
-
+  
   let gameOver = false
-  let animateId
+  let animateId = 0
 
   let obstacles = []
 
   class Obstacle {
-    constructor() {
-      this.xPos = -50
-      this.yPos = 0
-      this.width = 50
-      this.height = 0
-    }
-
-    move() {
-      this.yPos += 1
+    constructor(x, y) {
+      this.xPos = x
+      this.yPos = y
+      this.width = 40
+      this.height = 30
+      this.image = obstacleImage
     }
 
     draw() {
-      ctx.beginPath()
-      ctx.drawImage(obstacleImage ,this.xPos, this.yPos, this.width, this.height)
-      ctx.closePath()
+      ctx.drawImage(this.image ,this.xPos, this.yPos, this.width, this.height)
     }
 
-    checkCollision = () => {
-      if (
-        playerX < this.xPos + this.width &&
-        playerX + playerWidth > this.xPos &&
-        playerY < this.yPos + this.height &&
-        playerHeight + playerY > this.yPos
-      ) {
-        gameOver = true;
-        console.log('Game Over!')
-      }
+    move() {
+      this.draw()
+      this.xPos -= 1
     }
   }
 
@@ -65,71 +72,78 @@ window.addEventListener('load', () => {
 
   const drawObstacle = () => {
     ctx.beginPath()
-    ctx.drawImage(obstacleImage, obstacleX, obstacleY, obstacleWidth, obstacleHeigth )
+    ctx.drawImage(obstacleImage, obstacleX, obstacleY, obstacleWidth, obstacleHeight)
     ctx.fill()
     ctx.closePath()
   }
 
-  const checkCollision = () => {
-    if (
-      playerX < obstacles.xPos + obstacles.width &&
-      playerX + playerWidth > obstacles.xPos &&
-      playerY < obstacles.yPos + obstacles.height &&
-      playerHeight + playerY > obstacles.yPos
-    ) {
-      gameOver = true;
-      console.log('Game Over!')
-    }
-  }
-
   const animate = () => {
     ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
-    
-    drawPlayer()
-    drawObstacle()
-
-    const obstaclesStillInScreen = []
-
-    obstacles.forEach(obstacle => {
-      obstacle.draw()
-      obstacle.checkCollision()
-      obstacle.move()
-      if (obstacle.xPos < canvas.width) {
-        obstaclesStillInScreen.push(obstacle)
-      }
-    })
-    obstacles = obstaclesStillInScreen
 
     if (animateId % 250 === 0) {
-      obstacles.push(new Obstacle)
+      obstacles.push(new Obstacle (canvas.width,(Math.random() * (810 - 625 + 1) + 625)))
+      console.log(obstacles)
     }
 
-    checkCollision()
+    obstacles.forEach(obstacle => {
+      obstacle.move()
+   })
+
+    obstacles.forEach(obstacle => {
+      if (
+        playerX < obstacle.xPos + obstacle.width &&
+        playerX + playerWidth > obstacle.xPos &&
+        (playerY + (playerHeight / 4 * 3)) < obstacle.yPos + obstacle.height &&
+        playerHeight + playerY > obstacle.yPos
+      ) {
+        gameOver = true
+      }
+    })
+
+    drawPlayer()
+
     if (isMovingUp) {
-      playerY += 1
+      playerY -= 2
     } if (isMovingLeft) {
-      playerX -= 1
+      playerX -= 2
     } if (isMovingDown) {
-      playerY -= 1
+      playerY += 2
     } if (isMovingRight) {
-      playerX += 1
+      playerX += 2
+    }
+    
+    if (playerX > maxX) {
+    isMovingRight = false
+    } if (playerX < minX) {
+    isMovingLeft = false
+    } if (playerY < minY) {
+    playerY = minY
+    } if (playerY > maxY) {
+    playerY = maxY
     }
 
     if (gameOver) {
       cancelAnimationFrame(animateId)
+      intro.style.display = 'none'
+      gameDiv.style.display = 'none'
+      endGame.style.display = 'block'
+
+
     } else {
-      requestAnimationFrame(animate)
+      animateId = requestAnimationFrame(animate)
     }
   }
 
   const startGame = () => {
-    document.querySelector('.game-intro').style.display = 'none'
-    document.querySelector('.game-board').style.display = 'block'
-
-    animate()
+    intro.style.display = 'none'
+    gameDiv.style.display = 'block'
+    endGame.style.display = 'none'
+      animate()
   }
 
   document.getElementById('start-button').addEventListener('click', () => {
+     intro.style.display = 'none'
+     endGame.style.display = 'none'
     startGame()
   })
 
