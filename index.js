@@ -127,8 +127,6 @@ window.addEventListener('load', () => {
       intro.style.display = 'none'
       gameDiv.style.display = 'none'
       endGame.style.display = 'block'
-
-
     } else {
       animateId = requestAnimationFrame(animate)
     }
